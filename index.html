@@ -20,22 +20,25 @@ body {
     padding: 20px;
     box-sizing: border-box;
 }
-.logo { font-size: 22px; font-weight: bold; margin-bottom: 30px; }
+.logo { font-size: 22px; font-weight: bold; margin-bottom: 30px; color: orange; }
 .menu-item { padding: 12px; font-size: 16px; color: #555; cursor: pointer; border-radius: 8px; margin-bottom: 10px; }
 .menu-item:hover, .active { background: #f5f1ea; color: #000; }
 .main { flex: 1; padding: 30px; overflow-y: auto; }
-.page-title { font-size: 32px; margin-bottom: 20px; }
-.card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); position: relative; }
+.page-title { font-size: 32px; margin-bottom: 20px; color: orange; }
+.card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); position: relative; transition: background 0.3s; }
 .card img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
 .card button { position: absolute; top: 10px; right: 10px; background: red; color: #fff; border: none; border-radius: 6px; cursor: pointer; padding: 4px 8px; }
 .actions { display: flex; gap: 10px; margin-bottom: 20px; }
 .input-box { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
-.add-btn { padding: 10px 20px; border-radius: 8px; border: none; background: #4CAF50; color: #fff; cursor: pointer; }
-.add-btn:hover { background: #45a049; }
+.add-btn { padding: 10px 20px; border-radius: 8px; border: none; background: orange; color: #fff; cursor: pointer; }
+.add-btn:hover { background: darkorange; }
 .upload-btn { padding: 10px 20px; border-radius: 8px; border: none; background: #2196F3; color: #fff; cursor: pointer; }
 .upload-btn:hover { background: #0b7dda; }
 .todo-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background:#fff; border-radius:8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
 .todo-item span { cursor: pointer; }
+.templates { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+.template { width: 50px; height: 50px; border-radius: 8px; cursor: pointer; border: 2px solid #fff; transition: transform 0.2s, border 0.2s; }
+.template:hover { transform: scale(1.1); border: 2px solid #000; }
 </style>
 </head>
 <body>
@@ -57,6 +60,7 @@ let notes = JSON.parse(localStorage.getItem('notes')) || [];
 let todos = JSON.parse(localStorage.getItem('todos')) || [];
 let trash = JSON.parse(localStorage.getItem('trash')) || [];
 
+// Save all data to localStorage
 function saveAll() {
     localStorage.setItem('notes', JSON.stringify(notes));
     localStorage.setItem('todos', JSON.stringify(todos));
@@ -87,7 +91,7 @@ function loadNotes(){
         </div>`;
 
     notes.forEach((n,i)=>{
-        let html = `<div class='card'>`;
+        let html = `<div class='card' id='note-${i}' style='background:${n.color||'white'}'>`;
         if(n.type==="text") html += n.content;
         if(n.type==="image") html += `<img src="${n.content}">`;
         if(n.type==="pdf") html += `<p>📄 ${n.content.name || 'PDF File'}</p>`;
@@ -99,7 +103,7 @@ function loadNotes(){
 function addNote(){
     const input = document.getElementById('newNote');
     const text = input.value.trim();
-    if(text) { notes.push({type:"text", content:text}); saveAll(); input.value=''; loadNotes(); }
+    if(text) { notes.push({type:"text", content:text, color:'white'}); saveAll(); input.value=''; loadNotes(); }
 }
 
 function addFile(){
@@ -110,10 +114,10 @@ function addFile(){
         const file = e.target.files[0];
         if(file.type.startsWith('image/')){
             const reader = new FileReader();
-            reader.onload = ()=>{ notes.push({type:"image", content:reader.result}); saveAll(); loadNotes(); }
+            reader.onload = ()=>{ notes.push({type:"image", content:reader.result, color:'white'}); saveAll(); loadNotes(); }
             reader.readAsDataURL(file);
         } else if(file.type==='application/pdf'){
-            notes.push({type:"pdf", content:file});
+            notes.push({type:"pdf", content:file, color:'white'});
             saveAll(); loadNotes();
         }
     };
@@ -165,8 +169,15 @@ function deleteTodo(i){
 function loadTemplates(){
     const colors = ["#f28b82","#fbbc04","#fff475","#ccff90","#a7ffeb","#cbf0f8","#aecbfa","#d7aefb"];
     document.getElementById('content').innerHTML = `<h1 class='page-title'>Templates</h1><div class='templates'>`+
-        colors.map(c=>`<div class='template' style='background:${c}'></div>`).join('')+
+        colors.map(c=>`<div class='template' style='background:${c}' onclick="applyColor('${c}')"></div>`).join('')+
         `</div>`;
+}
+
+function applyColor(color){
+    // Change all notes color to selected template color
+    notes = notes.map(n => ({...n, color: color}));
+    saveAll();
+    loadNotes();
 }
 
 // ---------------- IMPORT ----------------
@@ -180,14 +191,14 @@ function importFile(e){
     files.forEach(file=>{
         if(file.type.startsWith('image/')){
             const reader = new FileReader();
-            reader.onload = ()=>{ notes.push({type:"image", content:reader.result}); saveAll(); loadNotes();}
+            reader.onload = ()=>{ notes.push({type:"image", content:reader.result, color:'white'}); saveAll(); loadNotes();}
             reader.readAsDataURL(file);
         } else if(file.type==='application/pdf'){
-            notes.push({type:"pdf", content:file});
+            notes.push({type:"pdf", content:file, color:'white'});
             saveAll(); loadNotes();
         } else {
             const reader = new FileReader();
-            reader.onload = ()=>{ notes.push({type:"text", content:reader.result}); saveAll(); loadNotes();}
+            reader.onload = ()=>{ notes.push({type:"text", content:reader.result, color:'white'}); saveAll(); loadNotes();}
             reader.readAsText(file);
         }
     });
