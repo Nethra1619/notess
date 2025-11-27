@@ -28,8 +28,14 @@ body {
 .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); position: relative; }
 .card img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
 .card button { position: absolute; top: 10px; right: 10px; background: red; color: #fff; border: none; border-radius: 6px; cursor: pointer; padding: 4px 8px; }
-.templates { display: flex; flex-wrap: wrap; gap: 10px; }
-.template { flex: 1 0 100px; height: 100px; border-radius: 12px; cursor: pointer; }
+.actions { display: flex; gap: 10px; margin-bottom: 20px; }
+.input-box { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+.add-btn { padding: 10px 20px; border-radius: 8px; border: none; background: #4CAF50; color: #fff; cursor: pointer; }
+.add-btn:hover { background: #45a049; }
+.upload-btn { padding: 10px 20px; border-radius: 8px; border: none; background: #2196F3; color: #fff; cursor: pointer; }
+.upload-btn:hover { background: #0b7dda; }
+.todo-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background:#fff; border-radius:8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.todo-item span { cursor: pointer; }
 </style>
 </head>
 <body>
@@ -74,8 +80,11 @@ function loadPage(page) {
 function loadNotes(){
     const content = document.getElementById('content');
     content.innerHTML = `<h1 class='page-title'>Simple Notes</h1>
-        <button onclick='addNote()'>+ Add Note</button>
-        <button onclick='addFile()'>+ Upload File</button>`;
+        <div class="actions">
+            <input type="text" id="newNote" placeholder="Type your note here..." class="input-box">
+            <button class="add-btn" onclick="addNote()">Add Note</button>
+            <button class="upload-btn" onclick="addFile()">Upload File</button>
+        </div>`;
 
     notes.forEach((n,i)=>{
         let html = `<div class='card'>`;
@@ -88,8 +97,9 @@ function loadNotes(){
 }
 
 function addNote(){
-    let text = prompt("Type your note:");
-    if(text) { notes.push({type:"text", content:text}); saveAll(); loadNotes(); }
+    const input = document.getElementById('newNote');
+    const text = input.value.trim();
+    if(text) { notes.push({type:"text", content:text}); saveAll(); input.value=''; loadNotes(); }
 }
 
 function addFile(){
@@ -120,16 +130,23 @@ function deleteNote(i){
 // ---------------- TODO ----------------
 function loadTodo(){
     const content = document.getElementById('content');
-    content.innerHTML = `<h1 class='page-title'>To-Do List</h1><button onclick='addTodo()'>+ Add Task</button>`;
+    content.innerHTML = `<h1 class='page-title'>To-Do List</h1>
+        <div class="actions">
+            <input type="text" id="newTodo" placeholder="New Task..." class="input-box">
+            <button class="add-btn" onclick="addTodo()">Add Task</button>
+        </div>`;
     todos.forEach((t,i)=>{
-        content.innerHTML += `<div class='card'>${t.done?"✔️ ":"⭕ "}${t.text} 
-        <button onclick="deleteTodo(${i})">Delete</button></div>`;
+        content.innerHTML += `<div class='todo-item'>
+            <span onclick="toggleTodo(${i})">${t.done?"✔️ ":"⭕ "}${t.text}</span>
+            <button onclick="deleteTodo(${i})">Delete</button>
+        </div>`;
     });
 }
 
 function addTodo(){
-    let t = prompt("New Task:");
-    if(t){ todos.push({text:t, done:false}); saveAll(); loadTodo(); }
+    const input = document.getElementById('newTodo');
+    const t = input.value.trim();
+    if(t){ todos.push({text:t, done:false}); saveAll(); input.value=''; loadTodo(); }
 }
 
 function toggleTodo(i){
