@@ -5,139 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Notes App</title>
 <style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #faf7f2;
-        display: flex;
-        height: 100vh;
-        overflow: hidden;
-    }
-
-    /* Sidebar */
-    .sidebar {
-        width: 240px;
-        background: #fff;
-        border-right: 1px solid #eee;
-        padding: 20px;
-        box-sizing: border-box;
-    }
-
-    .logo {
-        font-size: 22px;
-        font-weight: bold;
-        margin-bottom: 30px;
-    }
-
-    .menu-item {
-        padding: 12px;
-        font-size: 16px;
-        color: #555;
-        cursor: pointer;
-        border-radius: 8px;
-        margin-bottom: 10px;
-    }
-
-    .menu-item:hover, .active {
-        background: #f5f1ea;
-        color: #000;
-    }
-
-    /* Main */
-    .main {
-        flex: 1;
-        padding: 30px;
-        overflow-y: auto;
-    }
-
-    .page-title {
-        font-size: 32px;
-        margin-bottom: 20px;
-    }
-
-    .card {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 15px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        cursor: pointer;
-    }
-
-    .card:hover {
-        transform: scale(1.01);
-        transition: 0.2s ease;
-    }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #faf7f2;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+.sidebar {
+    width: 240px;
+    background: #fff;
+    border-right: 1px solid #eee;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.logo { font-size: 22px; font-weight: bold; margin-bottom: 30px; }
+.menu-item { padding: 12px; font-size: 16px; color: #555; cursor: pointer; border-radius: 8px; margin-bottom: 10px; }
+.menu-item:hover, .active { background: #f5f1ea; color: #000; }
+.main { flex: 1; padding: 30px; overflow-y: auto; }
+.page-title { font-size: 32px; margin-bottom: 20px; }
+.card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); position: relative; }
+.card img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
+.card button { position: absolute; top: 10px; right: 10px; background: red; color: #fff; border: none; border-radius: 6px; cursor: pointer; padding: 4px 8px; }
+.templates { display: flex; flex-wrap: wrap; gap: 10px; }
+.template { flex: 1 0 100px; height: 100px; border-radius: 12px; cursor: pointer; }
 </style>
 </head>
-
 <body>
-    <div class="sidebar">
-        <div class="logo">Notes</div>
-        <div class="menu-item active" onclick="loadPage('notes')">Simple Notes</div>
-        <div class="menu-item" onclick="loadPage('todo')">To‑Do List</div>
-        <div class="menu-item" onclick="loadPage('templates')">Templates</div>
-        <div class="menu-item" onclick="loadPage('import')">Import</div>
-        <div class="menu-item" onclick="loadPage('trash')">Trash</div>
-    </div>
+<div class="sidebar">
+    <div class="logo">Notes</div>
+    <div class="menu-item active" onclick="loadPage('notes')">Simple Notes</div>
+    <div class="menu-item" onclick="loadPage('todo')">To‑Do List</div>
+    <div class="menu-item" onclick="loadPage('templates')">Templates</div>
+    <div class="menu-item" onclick="loadPage('import')">Import</div>
+    <div class="menu-item" onclick="loadPage('trash')">Trash</div>
+</div>
 
-    <div class="main" id="content">
-        <!-- Default page -->
-        <h1 class="page-title">Simple Notes</h1>
-        <div class="card">Sample Note 1</div>
-        <div class="card">Sample Note 2</div>
-        <div class="card">Sample Note 3</div>
-    </div>
+<div class="main" id="content">
+</div>
 
 <script>
-function loadPage(page) {
-    const content = document.getElementById("content");
-    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-    event.target.classList.add('active');
-
-    if (page === 'notes') {
-        content.innerHTML = `
-            <h1 class='page-title'>Simple Notes</h1>
-            <div class='card'>Sample Note 1</div>
-            <div class='card'>Sample Note 2</div>
-            <div class='card'>Sample Note 3</div>
-        `;
-    }
-
-    if (page === 'todo') {
-        content.innerHTML = `
-            <h1 class='page-title'>To‑Do List</h1>
-            <div class='card'>Buy groceries</div>
-            <div class='card'>Finish project</div>
-            <div class='card'>Water the plants</div>
-        `;
-    }
-
-    if (page === 'templates') {
-        content.innerHTML = `
-            <h1 class='page-title'>Templates</h1>
-            <div class='card'>Daily Planner</div>
-            <div class='card'>Meeting Notes</div>
-        `;
-    }
-
-    if (page === 'import') {
-        content.innerHTML = `
-            <h1 class='page-title'>Import Notes</h1>
-            <div class='card'>Click to upload file</div>
-        `;
-    }
-
-    if (page === 'trash') {
-        content.innerHTML = `
-            <h1 class='page-title'>Trash</h1>
-            <div class='card'>Deleted Note 1</div>
-        `;
-    }
-}
-</script>
-<script>
-// FULL LOCAL STORAGE + EDITOR + TODO + TRASH SYSTEM
+// STORAGE
 let notes = JSON.parse(localStorage.getItem('notes')) || [];
 let todos = JSON.parse(localStorage.getItem('todos')) || [];
 let trash = JSON.parse(localStorage.getItem('trash')) || [];
@@ -148,52 +57,73 @@ function saveAll() {
     localStorage.setItem('trash', JSON.stringify(trash));
 }
 
+// PAGE LOADER
 function loadPage(page) {
     const content = document.getElementById("content");
     document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
     event.target.classList.add('active');
 
-    if (page === 'notes') loadNotes();
-    if (page === 'todo') loadTodo();
-    if (page === 'templates') loadTemplates();
-    if (page === 'import') loadImport();
-    if (page === 'trash') loadTrash();
+    if(page==='notes') loadNotes();
+    if(page==='todo') loadTodo();
+    if(page==='templates') loadTemplates();
+    if(page==='import') loadImport();
+    if(page==='trash') loadTrash();
 }
 
-// ---------------- NOTES PAGE ------------------
-function loadNotes() {
+// ---------------- NOTES ----------------
+function loadNotes(){
     const content = document.getElementById('content');
     content.innerHTML = `<h1 class='page-title'>Simple Notes</h1>
-        <button onclick='addNote()'>+ Add Note</button>`;
+        <button onclick='addNote()'>+ Add Note</button>
+        <button onclick='addFile()'>+ Upload File</button>`;
 
     notes.forEach((n,i)=>{
-        content.innerHTML += `<div class='card' onclick='editNote(${i})'>${n.substring(0,50)}...</div>`;
+        let html = `<div class='card'>`;
+        if(n.type==="text") html += n.content;
+        if(n.type==="image") html += `<img src="${n.content}">`;
+        if(n.type==="pdf") html += `<p>📄 ${n.content.name || 'PDF File'}</p>`;
+        html += `<button onclick="deleteNote(${i})">Delete</button></div>`;
+        content.innerHTML += html;
     });
 }
 
-function addNote() {
+function addNote(){
     let text = prompt("Type your note:");
-    if(text){ notes.push(text); saveAll(); loadNotes(); }
+    if(text) { notes.push({type:"text", content:text}); saveAll(); loadNotes(); }
 }
 
-function editNote(i){
-    let updated = prompt("Edit your note", notes[i]);
-    if(updated===null) return;
-    if(updated===''){ trash.push(notes[i]); notes.splice(i,1);} 
-    else notes[i] = updated;
-    saveAll(); loadNotes();
+function addFile(){
+    const input = document.createElement('input');
+    input.type='file';
+    input.accept='image/*,application/pdf';
+    input.onchange = (e)=>{
+        const file = e.target.files[0];
+        if(file.type.startsWith('image/')){
+            const reader = new FileReader();
+            reader.onload = ()=>{ notes.push({type:"image", content:reader.result}); saveAll(); loadNotes(); }
+            reader.readAsDataURL(file);
+        } else if(file.type==='application/pdf'){
+            notes.push({type:"pdf", content:file});
+            saveAll(); loadNotes();
+        }
+    };
+    input.click();
 }
 
-// ---------------- TODO PAGE ------------------
+function deleteNote(i){
+    trash.push(notes[i]);
+    notes.splice(i,1);
+    saveAll();
+    loadNotes();
+}
+
+// ---------------- TODO ----------------
 function loadTodo(){
     const content = document.getElementById('content');
-    content.innerHTML = `<h1 class='page-title'>To-Do List</h1>
-        <button onclick='addTodo()'>+ Add Task</button>`;
-
+    content.innerHTML = `<h1 class='page-title'>To-Do List</h1><button onclick='addTodo()'>+ Add Task</button>`;
     todos.forEach((t,i)=>{
-        content.innerHTML += `<div class='card' onclick='toggleTodo(${i})'>
-            ${t.done ? "✔️ " : "⭕ "}${t.text}
-        </div>`;
+        content.innerHTML += `<div class='card'>${t.done?"✔️ ":"⭕ "}${t.text} 
+        <button onclick="deleteTodo(${i})">Delete</button></div>`;
     });
 }
 
@@ -207,40 +137,61 @@ function toggleTodo(i){
     saveAll(); loadTodo();
 }
 
-// ---------------- TEMPLATES ------------------
-function loadTemplates(){
-    document.getElementById('content').innerHTML = `
-        <h1 class='page-title'>Templates</h1>
-        <div class='card'>Daily Planner Template</div>
-        <div class='card'>Quick Notes Template</div>`;
+function deleteTodo(i){
+    trash.push({type:"text", content:todos[i].text});
+    todos.splice(i,1);
+    saveAll();
+    loadTodo();
 }
 
-// ---------------- IMPORT ------------------
+// ---------------- TEMPLATES ----------------
+function loadTemplates(){
+    const colors = ["#f28b82","#fbbc04","#fff475","#ccff90","#a7ffeb","#cbf0f8","#aecbfa","#d7aefb"];
+    document.getElementById('content').innerHTML = `<h1 class='page-title'>Templates</h1><div class='templates'>`+
+        colors.map(c=>`<div class='template' style='background:${c}'></div>`).join('')+
+        `</div>`;
+}
+
+// ---------------- IMPORT ----------------
 function loadImport(){
-    document.getElementById('content').innerHTML = `
-        <h1 class='page-title'>Import Notes</h1>
-        <input type='file' onchange='importFile(event)' />`;
+    document.getElementById('content').innerHTML = `<h1 class='page-title'>Import Notes</h1>
+        <input type='file' onchange='importFile(event)' multiple />`;
 }
 
 function importFile(e){
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ()=>{
-        notes.push(reader.result);
-        saveAll(); loadNotes();
-    }
-    reader.readAsText(file);
+    const files = Array.from(e.target.files);
+    files.forEach(file=>{
+        if(file.type.startsWith('image/')){
+            const reader = new FileReader();
+            reader.onload = ()=>{ notes.push({type:"image", content:reader.result}); saveAll(); loadNotes();}
+            reader.readAsDataURL(file);
+        } else if(file.type==='application/pdf'){
+            notes.push({type:"pdf", content:file});
+            saveAll(); loadNotes();
+        } else {
+            const reader = new FileReader();
+            reader.onload = ()=>{ notes.push({type:"text", content:reader.result}); saveAll(); loadNotes();}
+            reader.readAsText(file);
+        }
+    });
 }
 
-// ---------------- TRASH ------------------
+// ---------------- TRASH ----------------
 function loadTrash(){
     const content = document.getElementById('content');
     content.innerHTML = `<h1 class='page-title'>Trash</h1>`;
     trash.forEach((t,i)=>{
-        content.innerHTML += `<div class='card'>${t}</div>`;
+        let html = `<div class='card'>`;
+        if(t.type==="text") html += t.content;
+        if(t.type==="image") html += `<img src="${t.content}">`;
+        if(t.type==="pdf") html += `<p>📄 ${t.content.name || 'PDF File'}</p>`;
+        html += `</div>`;
+        content.innerHTML += html;
     });
 }
+
+// INITIAL PAGE
+loadPage('notes');
 </script>
 </body>
 </html>
